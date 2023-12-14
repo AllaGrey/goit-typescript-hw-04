@@ -2,11 +2,18 @@ import React, { useReducer } from "react";
 
 type State = {
   isRequestInProgress: boolean;
-  requestStep: string
+  requestStep: 'start' | 'pending' | 'finished' | 'idle'
+}
+
+enum ActionTypes {
+  start = 'START_REQUEST',
+  pending = 'PENDING_REQUEST',
+  finish = 'FINISH_REQUEST',
+  reset = 'RESET_REQUEST'
 }
 
 type Action = {
-  type: string
+  type: ActionTypes.start | ActionTypes.pending | ActionTypes.finish | ActionTypes.reset 
 }
 
 const initialState: State = {
@@ -16,13 +23,13 @@ const initialState: State = {
 
 function requestReducer(state: State, action: Action): State {
   switch (action.type) {
-    case 'START_REQUEST':
+    case ActionTypes.start:
       return { ...state, isRequestInProgress: true, requestStep: 'start' };
-    case 'PENDING_REQUEST':
+    case ActionTypes.pending:
       return { ...state, isRequestInProgress: true, requestStep: 'pending' };
-    case 'FINISH_REQUEST':
+    case ActionTypes.finish:
       return { ...state, isRequestInProgress: false, requestStep: 'finished' };
-    case 'RESET_REQUEST':
+    case ActionTypes.reset:
       return { ...state, isRequestInProgress: false, requestStep: 'idle' };
     default:
       return state;
@@ -33,19 +40,19 @@ export function RequestComponent() {
   const [requestState, requestDispatch] = useReducer(requestReducer, initialState);
 
   const startRequest = () => {
-    requestDispatch({ type: 'START_REQUEST' });
+    requestDispatch({ type: ActionTypes.start });
     // Імітуємо запит до сервера
     setTimeout(() => {
-      requestDispatch({ type: 'PENDING_REQUEST' });
+      requestDispatch({ type: ActionTypes.pending });
       // Імітуємо отримання відповіді від сервера
       setTimeout(() => {
-        requestDispatch({ type: 'FINISH_REQUEST' });
+        requestDispatch({ type: ActionTypes.finish });
       }, 2000);
     }, 2000);
   };
 
   const resetRequest = () => {
-    requestDispatch({ type: 'RESET_REQUEST' });
+    requestDispatch({ type: ActionTypes.reset });
   };
 
   return (
